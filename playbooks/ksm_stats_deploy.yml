@@ -1,0 +1,40 @@
+
+- name: Deloy ksm_stats to compute hosts
+  hosts: nova_compute
+  tasks:
+  - name: Copy ksm_stats to compute hosts
+    copy:
+      src: "../files/ksm_stats"
+      dest: "/root/"
+      owner: root
+      group: root
+      mode: 0755
+  - name: Set up cron job
+    cron:
+      name: "KSM stats"
+      minute: "*/10"
+      job: "/bin/bash /root/ksm_stats >> /var/log/ksm_stats.log"
+
+- name: Update filebeat config
+  hosts: nova_compute
+  tasks:
+  - name: Add configs for ksm_log for filebeat
+    lineinfile:
+      backup: yes
+      insertbefore: "  registry_file"
+      line: "    - paths: ['/var/log/ksm_stats.log']\n      encoding: utf-8\n      fields_under_root: true\n      fields:\n        tags: ['full_scans','merge_across_nodes','pages_shared','pages_sharing','pages_to_scan', 'pages_unshared', 'pages_volatile']"
+      dest: "/etc/filebeat/filebeat.yml"
+- name: Deploy ksm_log config for logstash
+  hosts: logstash
+  tasks:
+  - name: Deploy appropriate logstash config file
+    copy:
+      src: "../files/ksm.conf"
+      dest: "/etc/logstash/conf.d/21-ksm.conf"
+      owner: root
+      group: root
+      mode: 0644
+  - name: Restart logstash
+    service:
+      name: logstash
+      state: restarted
