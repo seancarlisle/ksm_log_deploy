@@ -19,6 +19,7 @@
   tasks:
   - name: Add configs for ksm_log for filebeat
     blockinfile:
+      backup: yes
       insertbefore: "  registry_file"
       block: |
             - paths: ['/var/log/ksm_stats.log']
