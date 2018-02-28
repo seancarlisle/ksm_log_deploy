@@ -5,11 +5,11 @@
 #
 
 # Get the date
-DATE=$(date +%F" "%H":"%M":"%S")
+DATE=$(date +%F" "%H":"%M":"%S)
 
 # Get the KSM data
 KSM_STATS=''
-for stat in full_scans merge_across_nodes pages_shared pages_sharing pages_to_scan pages_unshared pages_volatile
+for stat in full_scans pages_shared pages_sharing pages_to_scan pages_unshared pages_volatile
 do
    KSM_STATS="$KSM_STATS $stat: $(cat /sys/kernel/mm/ksm/$stat) "
 done
