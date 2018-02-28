@@ -24,6 +24,10 @@
       insertbefore: "  registry_file"
       line: "    - paths: ['/var/log/ksm_stats.log']\n      encoding: utf-8\n      fields_under_root: true\n      fields:\n        tags: ['full_scans','merge_across_nodes','pages_shared','pages_sharing','pages_to_scan', 'pages_unshared', 'pages_volatile']"
       dest: "/etc/filebeat/filebeat.yml"
+  - name: Restart filebeat
+    service:
+      name: filebeat
+      state: restarted
 - name: Deploy ksm_log config for logstash
   hosts: logstash
   tasks:
